@@ -7,5 +7,5 @@ Rails.application.routes.draw do
     end
   end
 
-  root to:'api/v1/contracts#index', defaults: { format: :json }
+  root to: 'api/v1/contracts#index', defaults: { format: :json }
 end
