@@ -6,6 +6,6 @@ Rails.application.routes.draw do
       resources :documents, only: [ :index, :show, :create]
     end
   end
-
-  root to: 'api/v1/documents#index', defaults: { format: :json }
+  root to: '/', to: 'pages#home'
+  # root to: 'api/v1/documents#index', defaults: { format: :json }
 end
