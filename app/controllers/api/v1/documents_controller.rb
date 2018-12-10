@@ -3,7 +3,7 @@ class Api::V1::DocumentsController < Api::V1::BaseController
   before_action :set_document, only: [:show]
 
   def index
-    @documents = policy_scope(document)
+    @documents = policy_scope(Document)
   end
 
   def show
