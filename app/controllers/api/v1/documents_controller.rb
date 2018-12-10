@@ -13,9 +13,8 @@ class Api::V1::DocumentsController < Api::V1::BaseController
     url = "https://sandbox.clicksign.com/api/v1/documents?access_token=#{ENV['CLICKSIGN_KEY'].to_s}"
     body =   {
                 "document": {
-                  "path": params[:filename],
+                  "path": "/" + params[:filename],
                   "content_base64": params[:base64],
-                  "deadline_at": "2018-12-25T14:30:59-03:00",
                   "auto_close": true,
                   "locale": "pt-BR",
                   "signers": [
@@ -36,24 +35,28 @@ class Api::V1::DocumentsController < Api::V1::BaseController
                 }
               }.to_json
 
-
     headers = {:Content_Type => "application/json", :Accept => "application/json"}
     response = RestClient.post(url, body, headers)
-    # @document = Document.new(document_params)
-    # @document.user = current_user
-    # authorize @document
+    response_parsed = JSON.parse(response.body)
 
-    # if @document.save
-    #   render :show, status: :created
-    # else
-    #   render_error
-    # end
+    @document = Document.new(document_params)
+    @document.status = "running"
+    @document.key = response_parsed["document"]["key"]
+    @document.user = current_user
+    authorize @document
+
+    if @document.save
+      render :show, status: :created
+    else
+      render_error
+    end
   end
 
   private
 
   def document_params
-    params.require(:document).permit(:key, :filename, :status)
+    # params.require(:document).permit(:key, :filename, :status)
+    params.require(:document).permit(:filename)
   end
 
   def set_document
