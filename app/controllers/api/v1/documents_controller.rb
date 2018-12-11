@@ -10,46 +10,9 @@ class Api::V1::DocumentsController < Api::V1::BaseController
   end
 
   def create
-    url = "https://sandbox.clicksign.com/api/v1/documents?access_token=#{ENV['CLICKSIGN_KEY'].to_s}"
-    body =   {
-                "document": {
-                  "path": "/" + params[:filename],
-                  "content_base64": params[:base64],
-                  "auto_close": true,
-                  "locale": "pt-BR",
-                  "signers": [
-                    {
-                      "email": params[:client_email],
-                      "sign_as": "sign",
-                      "auths": [
-                        "email"
-                      ],
-                      "name": params[:client_name],
-                      "documentation": "123.321.123-40",
-                      "birthday": "1983-03-31",
-                      "has_documentation": true,
-                      "send_email": true,
-                      "message": "Olá, por favor assine o documento."
-                    }
-                  ]
-                }
-              }.to_json
-
-    headers = {:Content_Type => "application/json", :Accept => "application/json"}
-    response = RestClient.post(url, body, headers)
-    response_parsed = JSON.parse(response.body)
-
-    @document = Document.new(document_params)
-    @document.status = "running"
-    @document.key = response_parsed["document"]["key"]
-    @document.user = current_user
-    authorize @document
-
-    if @document.save
-      render :show, status: :created
-    else
-      render_error
-    end
+    post_and_save('sign')
+    post_and_save('endorser')
+    render :show, status: :created
   end
 
   private
@@ -69,4 +32,49 @@ class Api::V1::DocumentsController < Api::V1::BaseController
       status: :unprocessable_entity
   end
 
+  def post_and_save(signature_type)
+    url = "https://sandbox.clicksign.com/api/v1/documents?access_token=#{ENV['CLICKSIGN_KEY'].to_s}"
+    body =   {
+                "document": {
+                  "path": "/" + params[:filename],
+                  "content_base64": params[:base64],
+                  "auto_close": true,
+                  "locale": "pt-BR",
+                  "signers": [
+                    {
+                      "email": params[:client_email],
+                      "sign_as": signature_type,
+                      "auths": [
+                        "sms"
+                      ],
+                      "name": params[:client_name],
+                      "documentation": "123.321.123-40",
+                      "birthday": "1983-03-31",
+                      "has_documentation": true,
+                      "send_email": true,
+                      "phone_number": params[:phone_number],
+                      "message": "Olá, por favor assine o documento."
+
+                    }
+                  ]
+                }
+              }.to_json
+
+    headers = {:Content_Type => "application/json", :Accept => "application/json"}
+    response = RestClient.post(url, body, headers)
+    response_parsed = JSON.parse(response.body)
+
+    @document = Document.new(document_params)
+    @document.status = "running"
+    @document.key = response_parsed["document"]["key"]
+    @document.user = current_user
+    # @document.signature_type =
+    # @document.json_response = response
+    authorize @document
+
+    if @document.save
+    else
+      render_error
+    end
+  end
 end
