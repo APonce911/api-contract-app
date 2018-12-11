@@ -12,25 +12,10 @@ class Api::V1::DocumentsController < Api::V1::BaseController
   def create
     post_and_save('sign')
     post_and_save('endorser')
-    render :show, status: :created
+    render :index, status: :created
   end
 
   private
-
-  def document_params
-    # params.require(:document).permit(:key, :filename, :status)
-    params.require(:document).permit(:filename)
-  end
-
-  def set_document
-    @document = Document.find(params[:id])
-    authorize @document # For Pundit
-  end
-
-  def render_error
-    render json: { errors: @document.errors.full_messages },
-      status: :unprocessable_entity
-  end
 
   def post_and_save(signature_type)
     url = "https://sandbox.clicksign.com/api/v1/documents?access_token=#{ENV['CLICKSIGN_KEY'].to_s}"
@@ -68,13 +53,28 @@ class Api::V1::DocumentsController < Api::V1::BaseController
     @document.status = "running"
     @document.key = response_parsed["document"]["key"]
     @document.user = current_user
-    # @document.signature_type =
-    # @document.json_response = response
+    @document.signature_type = signature_type
+    @document.json_response = response
     authorize @document
 
     if @document.save
     else
       render_error
     end
+  end
+
+  def document_params
+    # params.require(:document).permit(:key, :filename, :status)
+    params.require(:document).permit(:filename)
+  end
+
+  def set_document
+    @document = Document.find(params[:id])
+    authorize @document # For Pundit
+  end
+
+  def render_error
+    render json: { errors: @document.errors.full_messages },
+      status: :unprocessable_entity
   end
 end
