@@ -11,7 +11,7 @@ class Api::V1::DocumentsController < Api::V1::BaseController
 
   def create
     post_and_save('sign')
-    post_and_save('endorser')
+    post_and_save('joint_debtor')
     render :index, status: :created
   end
 
