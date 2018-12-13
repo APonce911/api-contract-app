@@ -15,4 +15,9 @@ class DocumentPolicy < ApplicationPolicy
     return !user.nil?
   end
 
+  def webhook?
+  # everyone can access webhook endpoint
+  return true
+  end
+
 end
