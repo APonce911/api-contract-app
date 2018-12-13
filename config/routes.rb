@@ -6,7 +6,7 @@ Rails.application.routes.draw do
       resources :documents, only: [ :index, :show, :create, :update]
     end
   end
-  get '/api/v1/documents/webhook', to: 'api/v1/documents#webhook'
+  post '/api/v1/documents/webhook', to: 'api/v1/documents#webhook'
   root to: '/', to: 'pages#home'
   # root to: 'api/v1/documents#index', defaults: { format: :json }
 end
