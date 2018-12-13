@@ -1,5 +1,5 @@
 class Api::V1::DocumentsController < Api::V1::BaseController
-  acts_as_token_authentication_handler_for User, except: [ :index, :show, :webhook ]
+  acts_as_token_authentication_handler_for User, except: [ :index, :show, :webhook]
   before_action :set_document, only: [:show]
 
   def index
@@ -16,22 +16,30 @@ class Api::V1::DocumentsController < Api::V1::BaseController
   end
 
   def webhook
-  # we received a post request at webhook endpoint
-    if request.headers['Content-Type'] == 'application/json'
-      data = JSON.parse(request.body.read)
-    else
-      # application/x-www-form-urlencoded
-      data = params.as_json
-    end
-
-  p '===========entreiii iupiiii=============================='
-  p data
-  p '========================================='
-  render :nothing => true
+    # p '===========entrei webhook action=============================='
+    # we received a post request at webhook endpoint
+      if request.headers['Content-Type'] == 'application/json'
+        # p '==============entrei no if====================================='
+        data = JSON.parse(request.body.read)
+      else
+        # application/x-www-form-urlencoded
+        data = params.as_json
+      end
+    # p "fimmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm fora do if"
+      # webhook_response and return
+      # render :nothing => true, :status => 204, content_type: 'application/json' and return
+      # render plain: {}.to_json, :status => 204, content_type: 'application/json' and return
+      return webhook_response
   end
 
-
   private
+
+  def webhook_response
+    # return head :ok
+      render :webhook , :status => 204, content_type: 'application/json' and return
+    # return render plain: {error: 'ta foda essa porr4'}.to_json, status: 200, content_type: 'application/json'
+    # return render json: {}, status: 200, content_type: 'application/json'
+  end
 
   def post_and_save(signature_type)
     url = "https://sandbox.clicksign.com/api/v1/documents?access_token=#{ENV['CLICKSIGN_KEY'].to_s}"
@@ -93,4 +101,16 @@ class Api::V1::DocumentsController < Api::V1::BaseController
     render json: { errors: @document.errors.full_messages },
       status: :unprocessable_entity
   end
+
+  def render_nothing
+    # render status: 200, json: {}.to_json
+    # render json: {},
+    #   status: :created
+    # render nothing: true, status: 204, content_type: 'application/json'
+    # render json: {nothing:true}, status: 204
+    # head :ok
+    # render :nothing => true, :status => 204
+    render json: {teste: "sucesso!!!"}, status: :ok
+  end
+
 end
