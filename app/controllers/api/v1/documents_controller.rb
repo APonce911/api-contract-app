@@ -15,6 +15,18 @@ class Api::V1::DocumentsController < Api::V1::BaseController
     render :index, status: :created
   end
 
+  def webhook
+  # we received a post request at webhook endpoint
+    if request.headers['Content-Type'] == 'application/json'
+      data = JSON.parse(request.body.read)
+    else
+      # application/x-www-form-urlencoded
+      data = params.as_json
+    end
+
+  render :nothing => true
+  end
+
   private
 
   def post_and_save(signature_type)
