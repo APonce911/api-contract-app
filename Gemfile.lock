@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/rails/jbuilder.git
+  revision: 91c4eeed484abd28cada2628af1f45f3de0cb0f5
+  specs:
+    jbuilder (2.8.0)
+      activesupport (>= 4.2.0)
+      multi_json (>= 1.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -70,9 +78,6 @@ GEM
       domain_name (~> 0.5)
     i18n (1.1.1)
       concurrent-ruby (~> 1.0)
-    jbuilder (2.8.0)
-      activesupport (>= 4.2.0)
-      multi_json (>= 1.2)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -179,7 +184,7 @@ DEPENDENCIES
   byebug
   devise
   dotenv-rails
-  jbuilder (~> 2.5)
+  jbuilder!
   listen (>= 3.0.5, < 3.2)
   pg (>= 0.18, < 2.0)
   puma (~> 3.11)
